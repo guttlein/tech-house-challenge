@@ -6,11 +6,13 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 interface TaskModalProps {
   modalVisible: boolean;
   setModalVisible: (visible: boolean) => void;
+  setMyData: (data: FormData) => void;
 }
 
 export const TaskModal: React.FC<TaskModalProps> = ({
   modalVisible,
   setModalVisible,
+  setMyData,
 }) => {
   return (
     <Modal
@@ -30,7 +32,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({
             <MaterialIcons name="close" size={24} color="#B3B3B3" />
           </TouchableOpacity>
           <Text style={styles.modalTitle}>Añadir tarea</Text>
-          <TaskForm setModalVisible={setModalVisible} />
+          <TaskForm setModalVisible={setModalVisible} setMyData={setMyData} />
         </View>
       </View>
     </Modal>

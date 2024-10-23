@@ -7,6 +7,8 @@ import {
   Text,
   TouchableOpacity,
 } from "react-native";
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
 
 type FormData = {
   name: string;
@@ -15,24 +17,42 @@ type FormData = {
 
 interface TaskFormProps {
   setModalVisible: (visible: boolean) => void;
+  setMyData: (data: FormData) => void;
 }
 
-export const TaskForm: React.FC<TaskFormProps> = ({ setModalVisible }) => {
-  const [myData, setMyData] = useState<FormData>({
-    name: "",
-    description: "",
-  });
+const schema = yup.object().shape({
+  name: yup
+    .string()
+    .required("El nombre es requerido")
+    .min(2, "El nombre deberia tener al menos 2 caracteres"),
+  description: yup.string().required("La descripción es requerida"),
+});
+
+export const TaskForm: React.FC<TaskFormProps> = ({
+  setModalVisible,
+  setMyData,
+}) => {
   const {
     control,
     handleSubmit,
     formState: { errors },
   } = useForm<FormData>({
-    defaultValues: myData,
+    defaultValues: {
+      name: "",
+      description: "",
+    },
+    resolver: yupResolver(schema),
   });
+
   const onSubmit = (data: FormData) => {
     const { name, description } = data;
-    setMyData((prevValue) => ({ ...prevValue, name, description }));
+    setMyData((prevValue: FormData) => ({
+      ...prevValue,
+      title: name,
+      description,
+    }));
   };
+
   return (
     <View style={styles.formContainer}>
       <Text style={styles.label}>
@@ -40,7 +60,6 @@ export const TaskForm: React.FC<TaskFormProps> = ({ setModalVisible }) => {
       </Text>
       <Controller
         control={control}
-        rules={{ required: "El nombre es requerido" }}
         render={({ field: { onChange, onBlur, value } }) => (
           <TextInput
             style={styles.input}
@@ -59,7 +78,6 @@ export const TaskForm: React.FC<TaskFormProps> = ({ setModalVisible }) => {
       </Text>
       <Controller
         control={control}
-        rules={{ required: "La descripción es requerida" }}
         render={({ field: { onChange, onBlur, value } }) => (
           <TextInput
             style={styles.input__textArea}

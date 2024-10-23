@@ -1,6 +1,14 @@
-import { Text, View, TextInput, Button, StyleSheet } from "react-native";
+import {
+  Text,
+  View,
+  TextInput,
+  StyleSheet,
+  TouchableOpacity,
+} from "react-native";
 import { useForm, Controller } from "react-hook-form";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
 
 type FormData = {
   name: string;
@@ -8,19 +16,37 @@ type FormData = {
   phone: string;
 };
 
+const schema = yup.object().shape({
+  name: yup
+    .string()
+    .required("El nombre es requerido")
+    .min(2, "El nombre deberia tener al menos 2 caracteres"),
+  email: yup
+    .string()
+    .required("Email es requerido")
+    .email("Debe ser un email valido"),
+  phone: yup
+    .string()
+    .required("El teléfono")
+    .min(5, "El teléfono deberia tener al menos 5 números"),
+});
+
 export default function HomeScreen() {
   const [myData, setMyData] = useState<FormData>({
     name: "",
     email: "",
     phone: "",
   });
+
   const {
     control,
     handleSubmit,
     formState: { errors },
   } = useForm<FormData>({
     defaultValues: myData,
+    resolver: yupResolver(schema),
   });
+
   const onSubmit = (data: FormData) => {
     const { name, email, phone } = data;
     setMyData((prevValue) => ({ ...prevValue, name, email, phone }));
@@ -91,11 +117,12 @@ export default function HomeScreen() {
           <Text style={styles.error}>{errors.phone.message}</Text>
         )}
 
-        <Button
-          title="Guardar"
-          color="#639605"
+        <TouchableOpacity
+          style={styles.buttonConfirm}
           onPress={handleSubmit(onSubmit)}
-        />
+        >
+          <Text style={styles.buttontextConfirm}>Guardar</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -147,5 +174,18 @@ const styles = StyleSheet.create({
   error: {
     color: "#CC3872", // Color para el mensaje de error
     marginBottom: 10,
+  },
+  buttontextConfirm: {
+    color: "white",
+    fontWeight: "bold",
+  },
+  buttonConfirm: {
+    backgroundColor: "#639605",
+    color: "#fff",
+    borderRadius: 5,
+    padding: 10,
+    marginTop: 30,
+    width: "100%",
+    alignItems: "center",
   },
 });

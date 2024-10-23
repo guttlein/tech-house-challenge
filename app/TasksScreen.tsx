@@ -2,7 +2,6 @@ import {
   Text,
   View,
   StyleSheet,
-  Button,
   ActivityIndicator,
   TouchableOpacity,
 } from "react-native";
@@ -15,7 +14,11 @@ type todoType = {
   id: number;
   title: string;
   completed: boolean;
+  description?: string;
 };
+
+const lorem =
+  "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris,ac elementum ultrices mauris. Cursus urna";
 
 export default function TasksScreen() {
   const [todos, setTodos] = useState<todoType[]>([]);
@@ -62,29 +65,31 @@ export default function TasksScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.container__pageTitle}>Mis Tareas</Text>
-      {todos.map((todo: todoType) => (
-        <View key={todo.id} style={styles.container__task}>
-          <View style={styles.container__task__element}>
-            {/* Text */}
-            <View style={styles.container__task__element__text}>
-              {/* Title */}
-              <Text style={styles.container__task__element__title}>
-                {todo.title}
-              </Text>
-              {/* Subtitle */}
-              <Text style={styles.container__task__element__subtitle}>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris,
-                ac elementum ultrices mauris. Cursus urna
-              </Text>
-            </View>
+      {todos.length > 0 &&
+        todos?.map((todo: todoType) => (
+          <View key={todo.id} style={styles.container__task}>
+            <View style={styles.container__task__element}>
+              {/* Text */}
+              <View style={styles.container__task__element__text}>
+                {/* Title */}
+                <Text style={styles.container__task__element__title}>
+                  {todo.title}
+                </Text>
+                {/* Subtitle */}
+                <Text style={styles.container__task__element__subtitle}>
+                  {todo.description && todo.description?.length > 0
+                    ? todo.description
+                    : lorem}
+                </Text>
+              </View>
 
-            {/* Delete */}
-            <View>
-              <MaterialIcons name="delete" size={24} color="#B3B3B3" />
+              {/* Delete */}
+              <View>
+                <MaterialIcons name="delete" size={24} color="#B3B3B3" />
+              </View>
             </View>
           </View>
-        </View>
-      ))}
+        ))}
 
       {/* Add Task Btn */}
 
@@ -96,7 +101,11 @@ export default function TasksScreen() {
       </TouchableOpacity>
 
       {/* Task modal */}
-      <TaskModal modalVisible={openModal} setModalVisible={setOpenModal} />
+      <TaskModal
+        modalVisible={openModal}
+        setModalVisible={setOpenModal}
+        setMyData={setTodos}
+      />
     </View>
   );
 }
