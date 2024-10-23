@@ -4,6 +4,7 @@ import {
   StyleSheet,
   Button,
   ActivityIndicator,
+  TouchableOpacity,
 } from "react-native";
 import { useEffect, useState } from "react";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
@@ -86,11 +87,13 @@ export default function TasksScreen() {
       ))}
 
       {/* Add Task Btn */}
-      <Button
-        title="Añadir tarea"
-        color="#639605"
+
+      <TouchableOpacity
+        style={styles.buttonConfirm}
         onPress={() => handleAddTask()}
-      />
+      >
+        <Text style={styles.buttontextConfirm}>Añadir tarea</Text>
+      </TouchableOpacity>
 
       {/* Task modal */}
       <TaskModal modalVisible={openModal} setModalVisible={setOpenModal} />
@@ -149,5 +152,18 @@ const styles = StyleSheet.create({
   error: {
     color: "#CC3872", // Color para el mensaje de error
     marginBottom: 10,
+  },
+  buttontextConfirm: {
+    color: "white",
+    fontWeight: "bold",
+  },
+  buttonConfirm: {
+    backgroundColor: "#639605",
+    color: "#fff",
+    borderRadius: 5,
+    padding: 10,
+    marginTop: 30,
+    width: "100%",
+    alignItems: "center",
   },
 });

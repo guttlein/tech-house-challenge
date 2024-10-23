@@ -29,7 +29,8 @@ export const TaskModal: React.FC<TaskModalProps> = ({
           >
             <MaterialIcons name="close" size={24} color="#B3B3B3" />
           </TouchableOpacity>
-          <TaskForm />
+          <Text style={styles.modalTitle}>Añadir tarea</Text>
+          <TaskForm setModalVisible={setModalVisible} />
         </View>
       </View>
     </Modal>
@@ -49,11 +50,17 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   modalContent: {
-    width: 300,
+    width: "90%",
     padding: 20,
     backgroundColor: "white",
     borderRadius: 10,
     alignItems: "center",
+  },
+  modalTitle: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#333333",
+    alignSelf: "flex-start",
   },
   closeButton: {
     position: "absolute",
