@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
   View,
@@ -9,6 +9,8 @@ import {
 } from "react-native";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { TaskContext } from "@/context/TaskContext";
+import { todoType } from "@/types/todoType";
 
 type FormData = {
   name: string;
@@ -17,7 +19,6 @@ type FormData = {
 
 interface TaskFormProps {
   setModalVisible: (visible: boolean) => void;
-  setMyData: (data: FormData) => void;
 }
 
 const schema = yup.object().shape({
@@ -28,10 +29,7 @@ const schema = yup.object().shape({
   description: yup.string().required("La descripción es requerida"),
 });
 
-export const TaskForm: React.FC<TaskFormProps> = ({
-  setModalVisible,
-  setMyData,
-}) => {
+export const TaskForm: React.FC<TaskFormProps> = ({ setModalVisible }) => {
   const {
     control,
     handleSubmit,
@@ -44,13 +42,15 @@ export const TaskForm: React.FC<TaskFormProps> = ({
     resolver: yupResolver(schema),
   });
 
+  const { setTodos } = useContext(TaskContext);
+
   const onSubmit = (data: FormData) => {
-    const { name, description } = data;
-    setMyData((prevValue: FormData) => ({
+    const { name: title, description } = data;
+    setTodos((prevValue: todoType[]) => [
       ...prevValue,
-      title: name,
-      description,
-    }));
+      { id: prevValue.length + 1, title, description },
+    ]);
+    setModalVisible(false);
   };
 
   return (

@@ -8,14 +8,8 @@ import {
 import { useEffect, useState } from "react";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { TaskModal } from "@/components/TaskModal";
-
-type todoType = {
-  userId: number;
-  id: number;
-  title: string;
-  completed: boolean;
-  description?: string;
-};
+import { TaskContext } from "@/context/TaskContext";
+import { responseType, todoType } from "@/types/todoType";
 
 const lorem =
   "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris,ac elementum ultrices mauris. Cursus urna";
@@ -28,14 +22,26 @@ export default function TasksScreen() {
 
   useEffect(() => {
     const fetchTodos = async () => {
+      setLoading(true);
       try {
         const response = await fetch(
           "https://jsonplaceholder.typicode.com/todos/"
         );
-        const data = await response?.json();
-        setTodos(data.slice(0, 3));
-      } catch (err) {
-        setError(err.message);
+        const data = await response.json();
+        const dataSliced = data.slice(0, 3);
+        const responseToSave = dataSliced.map(
+          ({ completed, userId, ...task }: responseType) => ({
+            ...task,
+            description: lorem,
+          })
+        );
+        setTodos(responseToSave);
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError("Ocurrio un error inesperado");
+        }
       } finally {
         setLoading(false);
       }
@@ -61,52 +67,59 @@ export default function TasksScreen() {
   const handleAddTask = () => {
     setOpenModal(true);
   };
+  const handleDeleteTask = (id: number) => {
+    const task = todos.find((element) => element.id === id);
+    if (task) {
+      const taskToDelete = todos.indexOf(task);
+      setTodos(todos.toSpliced(taskToDelete, 1));
+    }
+  };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.container__pageTitle}>Mis Tareas</Text>
-      {todos.length > 0 &&
-        todos?.map((todo: todoType) => (
-          <View key={todo.id} style={styles.container__task}>
-            <View style={styles.container__task__element}>
-              {/* Text */}
-              <View style={styles.container__task__element__text}>
-                {/* Title */}
-                <Text style={styles.container__task__element__title}>
-                  {todo.title}
-                </Text>
-                {/* Subtitle */}
-                <Text style={styles.container__task__element__subtitle}>
-                  {todo.description && todo.description?.length > 0
-                    ? todo.description
-                    : lorem}
-                </Text>
-              </View>
+    <TaskContext.Provider value={{ setTodos }}>
+      <View style={styles.container}>
+        <Text style={styles.container__pageTitle}>Mis Tareas</Text>
 
-              {/* Delete */}
-              <View>
-                <MaterialIcons name="delete" size={24} color="#B3B3B3" />
+        {/* Render Task List */}
+        {todos.length > 0 &&
+          todos?.map((todo: todoType) => (
+            <View key={todo.id} style={styles.container__task}>
+              <View style={styles.container__task__element}>
+                {/* Text */}
+                <View style={styles.container__task__element__text}>
+                  {/* Title */}
+                  <Text style={styles.container__task__element__title}>
+                    {todo.title}
+                  </Text>
+                  {/* Subtitle */}
+                  <Text style={styles.container__task__element__subtitle}>
+                    {todo.description}
+                  </Text>
+                </View>
+
+                {/* Delete */}
+                <View>
+                  <TouchableOpacity onPress={() => handleDeleteTask(todo.id)}>
+                    <MaterialIcons name="delete" size={24} color="#B3B3B3" />
+                  </TouchableOpacity>
+                </View>
               </View>
             </View>
-          </View>
-        ))}
+          ))}
 
-      {/* Add Task Btn */}
+        {/* Add Task Btn */}
 
-      <TouchableOpacity
-        style={styles.buttonConfirm}
-        onPress={() => handleAddTask()}
-      >
-        <Text style={styles.buttontextConfirm}>Añadir tarea</Text>
-      </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.buttonConfirm}
+          onPress={() => handleAddTask()}
+        >
+          <Text style={styles.buttontextConfirm}>Añadir tarea</Text>
+        </TouchableOpacity>
 
-      {/* Task modal */}
-      <TaskModal
-        modalVisible={openModal}
-        setModalVisible={setOpenModal}
-        setMyData={setTodos}
-      />
-    </View>
+        {/* Task modal */}
+        <TaskModal modalVisible={openModal} setModalVisible={setOpenModal} />
+      </View>
+    </TaskContext.Provider>
   );
 }
 
@@ -142,10 +155,12 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between",
     paddingHorizontal: 5,
   },
   container__task__element__text: {
     paddingRight: 5,
+    width: "90%",
   },
   container__task__element__title: {
     fontSize: 16,
@@ -159,7 +174,7 @@ const styles = StyleSheet.create({
     fontWeight: "400",
   },
   error: {
-    color: "#CC3872", // Color para el mensaje de error
+    color: "#CC3872",
     marginBottom: 10,
   },
   buttontextConfirm: {
