@@ -16,16 +16,17 @@ type taskListProps = {
 };
 
 export const TaskList = ({ todos, handleDeleteTask }: taskListProps) => {
+  // Elemento para renderizar dentro del FlatList
   const renderTask = ({ item }: ListRenderItemInfo<todoType>) => (
     <View key={item.id} style={styles.container__task}>
       <View style={styles.container__task__element}>
         {/* Text */}
         <View style={styles.container__task__element__text}>
-          {/* Title */}
+          {/* Título */}
           <Text style={styles.container__task__element__title}>
             {item.title}
           </Text>
-          {/* Subtitle */}
+          {/* Descripción */}
           <Text style={styles.container__task__element__subtitle}>
             {item.description}
           </Text>
@@ -40,6 +41,8 @@ export const TaskList = ({ todos, handleDeleteTask }: taskListProps) => {
       </View>
     </View>
   );
+
+  // Renderizo el FlatList con la lista de todas las tareas.
   return (
     <FlatList
       data={todos}

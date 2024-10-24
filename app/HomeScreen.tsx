@@ -16,6 +16,7 @@ type FormData = {
   phone: string;
 };
 
+// Validaciones para formulario de Mis Datos
 const schema = yup.object().shape({
   name: yup
     .string()
@@ -47,6 +48,8 @@ export default function HomeScreen() {
     resolver: yupResolver(schema),
   });
 
+  // Al realizar el Submit del formulario, guardo los datos
+  // !Para el futuro, hay que crear sección de perfil para mostrar estos datos guardados
   const onSubmit = (data: FormData) => {
     const { name, email, phone } = data;
     setMyData((prevValue) => ({ ...prevValue, name, email, phone }));
@@ -59,6 +62,7 @@ export default function HomeScreen() {
         <Text style={styles.label}>
           Nombre <Text style={styles.label__mandatory}>*</Text>
         </Text>
+        {/* Form controller para Nombre */}
         <Controller
           control={control}
           rules={{ required: "El nombre es requerido" }}
@@ -78,6 +82,8 @@ export default function HomeScreen() {
         <Text style={styles.label}>
           Email <Text style={styles.label__mandatory}>*</Text>
         </Text>
+
+        {/* Form controller para Email */}
         <Controller
           control={control}
           rules={{ required: "El email es requerido" }}
@@ -99,6 +105,8 @@ export default function HomeScreen() {
         <Text style={styles.label}>
           Teléfono <Text style={styles.label__mandatory}>*</Text>
         </Text>
+
+        {/* Form controller para Tel. */}
         <Controller
           control={control}
           rules={{ required: "El teléfono es requerido" }}
@@ -117,6 +125,7 @@ export default function HomeScreen() {
           <Text style={styles.error}>{errors.phone.message}</Text>
         )}
 
+        {/* Btn de guardar */}
         <TouchableOpacity
           style={styles.buttonConfirm}
           onPress={handleSubmit(onSubmit)}
