@@ -6,10 +6,10 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { useEffect, useState } from "react";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { TaskModal } from "@/components/TaskModal";
 import { TaskContext } from "@/context/TaskContext";
 import { responseType, todoType } from "@/types/todoType";
+import { TaskList } from "@/components/TaskList";
 
 const lorem =
   "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris,ac elementum ultrices mauris. Cursus urna";
@@ -81,31 +81,7 @@ export default function TasksScreen() {
         <Text style={styles.container__pageTitle}>Mis Tareas</Text>
 
         {/* Render Task List */}
-        {todos.length > 0 &&
-          todos?.map((todo: todoType) => (
-            <View key={todo.id} style={styles.container__task}>
-              <View style={styles.container__task__element}>
-                {/* Text */}
-                <View style={styles.container__task__element__text}>
-                  {/* Title */}
-                  <Text style={styles.container__task__element__title}>
-                    {todo.title}
-                  </Text>
-                  {/* Subtitle */}
-                  <Text style={styles.container__task__element__subtitle}>
-                    {todo.description}
-                  </Text>
-                </View>
-
-                {/* Delete */}
-                <View>
-                  <TouchableOpacity onPress={() => handleDeleteTask(todo.id)}>
-                    <MaterialIcons name="delete" size={24} color="#B3B3B3" />
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </View>
-          ))}
+        <TaskList todos={todos} handleDeleteTask={handleDeleteTask} />
 
         {/* Add Task Btn */}
 
@@ -113,7 +89,7 @@ export default function TasksScreen() {
           style={styles.buttonConfirm}
           onPress={() => handleAddTask()}
         >
-          <Text style={styles.buttontextConfirm}>Añadir tarea</Text>
+          <Text style={styles.buttonTextConfirm}>Añadir tarea</Text>
         </TouchableOpacity>
 
         {/* Task modal */}
@@ -158,26 +134,11 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingHorizontal: 5,
   },
-  container__task__element__text: {
-    paddingRight: 5,
-    width: "90%",
-  },
-  container__task__element__title: {
-    fontSize: 16,
-    fontWeight: "bold",
-    textTransform: "capitalize",
-    color: "#333333",
-  },
-  container__task__element__subtitle: {
-    fontSize: 12,
-    color: "##777777",
-    fontWeight: "400",
-  },
   error: {
     color: "#CC3872",
     marginBottom: 10,
   },
-  buttontextConfirm: {
+  buttonTextConfirm: {
     color: "white",
     fontWeight: "bold",
   },
