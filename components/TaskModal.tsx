@@ -6,12 +6,17 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 interface TaskModalProps {
   modalVisible: boolean;
   setModalVisible: (visible: boolean) => void;
+  taskCounter: number;
+  setTaskCounter: (id: number) => void;
 }
 
 export const TaskModal: React.FC<TaskModalProps> = ({
   modalVisible,
   setModalVisible,
+  taskCounter,
+  setTaskCounter,
 }) => {
+  // Modal para crear una nueva tarea
   return (
     <Modal
       animationType="slide"
@@ -23,6 +28,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({
     >
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
+          {/* Boton X para cerrar el modal */}
           <TouchableOpacity
             style={styles.closeButton}
             onPress={() => setModalVisible(false)}
@@ -30,7 +36,13 @@ export const TaskModal: React.FC<TaskModalProps> = ({
             <MaterialIcons name="close" size={24} color="#B3B3B3" />
           </TouchableOpacity>
           <Text style={styles.modalTitle}>Añadir tarea</Text>
-          <TaskForm setModalVisible={setModalVisible} />
+
+          {/* Formulario para crear Tarea */}
+          <TaskForm
+            setModalVisible={setModalVisible}
+            taskCounter={taskCounter}
+            setTaskCounter={setTaskCounter}
+          />
         </View>
       </View>
     </Modal>

@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
   View,
@@ -19,8 +19,10 @@ type FormData = {
 
 interface TaskFormProps {
   setModalVisible: (visible: boolean) => void;
+  taskCounter: number;
+  setTaskCounter: (id: number) => void;
 }
-
+// Validaciones para el formulario de Tareas
 const schema = yup.object().shape({
   name: yup
     .string()
@@ -29,7 +31,11 @@ const schema = yup.object().shape({
   description: yup.string().required("La descripción es requerida"),
 });
 
-export const TaskForm: React.FC<TaskFormProps> = ({ setModalVisible }) => {
+export const TaskForm: React.FC<TaskFormProps> = ({
+  setModalVisible,
+  taskCounter,
+  setTaskCounter,
+}) => {
   const {
     control,
     handleSubmit,
@@ -42,14 +48,17 @@ export const TaskForm: React.FC<TaskFormProps> = ({ setModalVisible }) => {
     resolver: yupResolver(schema),
   });
 
+  // Traigo del contexto el set state para las tareas
   const { setTodos } = useContext(TaskContext);
 
+  // Al hacer el submit del formulario, guardo los campos y se los agrego a la lista de tareas para luego mostrarlas
   const onSubmit = (data: FormData) => {
     const { name: title, description } = data;
     setTodos((prevValue: todoType[]) => [
       ...prevValue,
-      { id: prevValue.length + 1, title, description },
+      { id: taskCounter, title, description },
     ]);
+    setTaskCounter((prevValue: number) => prevValue + 1);
     setModalVisible(false);
   };
 
@@ -58,6 +67,8 @@ export const TaskForm: React.FC<TaskFormProps> = ({ setModalVisible }) => {
       <Text style={styles.label}>
         Nombre <Text style={styles.label__mandatory}>*</Text>
       </Text>
+
+      {/* Form controller para el Nombre */}
       <Controller
         control={control}
         render={({ field: { onChange, onBlur, value } }) => (
@@ -76,6 +87,7 @@ export const TaskForm: React.FC<TaskFormProps> = ({ setModalVisible }) => {
       <Text style={styles.label}>
         Descripción <Text style={styles.label__mandatory}>*</Text>
       </Text>
+      {/* Form controller para la descripción */}
       <Controller
         control={control}
         render={({ field: { onChange, onBlur, value } }) => (

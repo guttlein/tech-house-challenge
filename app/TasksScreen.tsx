@@ -11,16 +11,25 @@ import { TaskContext } from "@/context/TaskContext";
 import { responseType, todoType } from "@/types/todoType";
 import { TaskList } from "@/components/TaskList";
 
+// Texto Default en caso de no traer descripción
 const lorem =
   "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris,ac elementum ultrices mauris. Cursus urna";
 
 export default function TasksScreen() {
+  // Estado para tareas
   const [todos, setTodos] = useState<todoType[]>([]);
+  // Estado de carga para traer las tareas.
   const [loading, setLoading] = useState<boolean>(true);
+  // Estado de error para mostrar mensaje
   const [error, setError] = useState<string | null>(null);
+  // Estado del modal para crear nueva tarea
   const [openModal, setOpenModal] = useState<boolean>(false);
+  // Creo un contador incremental para evitar que los ID se repitan al crear y eliminar elementos de la lista
+  // !Lo inicio desde 4 ya que trae los 3 primeros elementos desde el fetch
+  const [taskCounter, setTaskCounter] = useState(4);
 
   useEffect(() => {
+    // Trae las tareas del fetch, extrae las 3 primeras y se deshace de los elementos innecesarios para guardarlo en la lista de estados
     const fetchTodos = async () => {
       setLoading(true);
       try {
@@ -50,10 +59,12 @@ export default function TasksScreen() {
     fetchTodos();
   }, []);
 
+  // Muestra indicador de carga mientras trae las tareas del fetch
   if (loading) {
     return <ActivityIndicator size="large" color="#639605" />;
   }
 
+  // Muestra error en caso de que algun error ocurra con el fetch
   if (error) {
     return (
       <View style={styles.container__task}>
@@ -67,6 +78,8 @@ export default function TasksScreen() {
   const handleAddTask = () => {
     setOpenModal(true);
   };
+
+  // Busca el elemento por su ID y lo elimina
   const handleDeleteTask = (id: number) => {
     const task = todos.find((element) => element.id === id);
     if (task) {
@@ -93,7 +106,12 @@ export default function TasksScreen() {
         </TouchableOpacity>
 
         {/* Task modal */}
-        <TaskModal modalVisible={openModal} setModalVisible={setOpenModal} />
+        <TaskModal
+          modalVisible={openModal}
+          setModalVisible={setOpenModal}
+          taskCounter={taskCounter}
+          setTaskCounter={setTaskCounter}
+        />
       </View>
     </TaskContext.Provider>
   );
